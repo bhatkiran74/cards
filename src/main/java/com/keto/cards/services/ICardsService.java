@@ -8,4 +8,6 @@ public interface ICardsService {
 
     CardsDto findCardsDetailsByMobileNumber(String mobileNumber);
     boolean updateCard(CardsDto cardsDto);
+    boolean deleteCard(String mobileNumber);
+
 }

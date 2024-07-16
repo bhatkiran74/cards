@@ -69,6 +69,21 @@ public class CardsServiceImpl implements ICardsService {
         cardsRepository.save(cards);
         return true;
     }
+    /**
+     * Deletes a card based on the provided mobile number.
+     *
+     * @param mobileNumber The mobile number associated with the customer's card.
+     * @return true if the deletion was successful.
+     * @throws ResourceNotFoundException if no card is found with the given mobile number.
+     */
+    @Override
+    public boolean deleteCard(String mobileNumber) {
+        Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber)
+        );
+        cardsRepository.deleteById(cards.getCardId());
+        return true;
+    }
 
     /**
      * Helper method to create a new card entity.
