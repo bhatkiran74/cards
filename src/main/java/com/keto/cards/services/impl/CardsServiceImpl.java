@@ -2,9 +2,12 @@ package com.keto.cards.services.impl;
 
 import com.keto.cards.entity.Cards;
 import com.keto.cards.exception.CardAlreadyExistsException;
+import com.keto.cards.exception.ResourceNotFoundException;
 import com.keto.cards.repository.CardsRepository;
 import com.keto.cards.services.ICardsService;
 import com.keto.cards.utils.constants.CardsConstants;
+import com.keto.cards.utils.dto.CardsDto;
+import com.keto.cards.utils.mapper.CardMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,23 @@ public class CardsServiceImpl implements ICardsService {
             throw new CardAlreadyExistsException("Card already registered with given mobileNumber "+mobileNumber);
         }
         cardsRepository.save(createNewcard(mobileNumber));
+    }
+
+    /**
+     * Finds card details based on the provided mobile number.
+     *
+     * @param mobileNumber The mobile number associated with the customer's card.
+     * @return CardsDto containing the card details.
+     * @throws ResourceNotFoundException if no card is found with the given mobile number.
+     */
+    @Override
+    public CardsDto findCardsDetailsByMobileNumber(String mobileNumber) {
+
+        Cards cards = cardsRepository.findByMobileNumber(mobileNumber)
+                .orElseThrow(()->
+                        new ResourceNotFoundException("Card details not found with given mobileNumber "+mobileNumber));
+
+        return CardMapper.mapToCardsDto(cards,new CardsDto());
     }
 
     /**
