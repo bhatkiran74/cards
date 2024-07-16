@@ -12,10 +12,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 @Tag(name = "Cards Management", description = "Endpoints for managing cards")
 @RestController
 @RequestMapping(path = "/api/cards", produces = {MediaType.APPLICATION_JSON_VALUE})
+@Validated
 public class CardsController {
 
     @Autowired
@@ -56,7 +60,8 @@ public class CardsController {
                             schema = @Schema(implementation = ErrorResponseDto.class)) })
     })
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createCard(@RequestParam String mobileNumber){
+    public ResponseEntity<ResponseDto> createCard(@Valid @RequestParam
+                                                      @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")  String mobileNumber){
         iCardsService.createCard(mobileNumber);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -85,7 +90,9 @@ public class CardsController {
                             schema = @Schema(implementation = ErrorResponseDto.class)) })
     })
     @GetMapping("/fetch")
-    public ResponseEntity<CardsDto> findCardsDetailsByMobileNumber(@RequestParam String mobileNumber){
+    public ResponseEntity<CardsDto> findCardsDetailsByMobileNumber(@RequestParam
+                                                                       @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
+                                                                       String mobileNumber){
         CardsDto cardsDto = iCardsService.findCardsDetailsByMobileNumber(mobileNumber);
         return ResponseEntity.status(HttpStatus.OK).body(cardsDto);
     }
@@ -107,7 +114,7 @@ public class CardsController {
                             schema = @Schema(implementation = ResponseDto.class)) })
     })
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateCard(@RequestBody CardsDto cardsDto){
+    public ResponseEntity<ResponseDto> updateCard(@Valid @RequestBody CardsDto cardsDto){
         boolean isUpdated = iCardsService.updateCard(cardsDto);
 
         if (isUpdated){
@@ -133,7 +140,9 @@ public class CardsController {
                             schema = @Schema(implementation = ResponseDto.class)) })
     })
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteCardDetails(@RequestParam String mobileNumber) {
+    public ResponseEntity<ResponseDto> deleteCardDetails(@RequestParam
+                                                             @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
+                                                             String mobileNumber) {
         boolean isDeleted = iCardsService.deleteCard(mobileNumber);
         if(isDeleted) {
             return ResponseEntity
